@@ -1,6 +1,8 @@
 import datetime
 from decimal import Decimal
 
+from django.utils.functional import Promise
+from django.utils.encoding import force_text
 from django.core.serializers.json import DjangoJSONEncoder
 
 
@@ -12,6 +14,8 @@ class TZAwareJSONEncoder(DjangoJSONEncoder):
 
 
 def default(o):
+    if isinstance(o, Promise):
+        return force_text(o)
     if hasattr(o, 'to_json'):
         return o.to_json()
     if isinstance(o, Decimal):

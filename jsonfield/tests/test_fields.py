@@ -1,4 +1,5 @@
 #:coding=utf-8:
+from django.utils.translation import ugettext_lazy as _
 from django.test import TestCase as DjangoTestCase
 from django.utils.encoding import force_text
 from django import forms
@@ -100,6 +101,16 @@ class JSONFieldTest(DjangoTestCase):
         self.assertEqual(2, JSONFieldTestModel.objects.filter(json__contains='foo').count())
         # This code needs to be implemented!
         self.assertRaises(TypeError, lambda: JSONFieldTestModel.objects.filter(json__contains=['baz', 'foo']))
+
+    def test_i18n_lazy_object(self):
+        """
+        Test jsonfield can work with ugettext_lazy objects
+        """
+        # Create i18n object with ugettext_lazy value
+        i18n_obj = JSONFieldTestModel.objects.create(json={'foo': _('bar')})
+        # Check it was saved and its equal to bar
+        self.assertEqual(JSONFieldTestModel.objects.get(id=i18n_obj.id).json['foo'],
+                         'bar')
 
     def test_query_isnull(self):
         JSONFieldTestModel.objects.create(json=None)
